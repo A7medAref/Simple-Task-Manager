@@ -1,0 +1,12 @@
+services:
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    ports:
+      - '27017:27017'
+    volumes:
+      - dija_mongo_data:/data/db
+    restart: always
+
+volumes:
+  dija_mongo_data:
