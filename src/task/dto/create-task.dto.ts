@@ -1,6 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsDate, IsEnum, IsNotEmpty, MinLength } from 'class-validator';
+import {
+  IsDate,
+  isDateString,
+  IsEnum,
+  IsNotEmpty,
+  MinLength,
+} from 'class-validator';
 
 import { TaskPriority } from '../enum/task-priority.enum';
 import { TaskStatus } from '../enum/task-status.enum';
@@ -26,7 +32,16 @@ export class CreateTaskDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  @Transform(({ value }) => new Date(value), { toClassOnly: true })
+  @Transform(
+    ({ value }) => {
+      if (typeof value === 'string' && isDateString(value)) {
+        return new Date(value);
+      }
+
+      return value;
+    },
+    { toClassOnly: true },
+  )
   @IsDate()
   dueDate: Date;
 }

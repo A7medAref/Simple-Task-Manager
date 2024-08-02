@@ -68,6 +68,8 @@ export class AuthService {
     res.setHeader('Authorization', `Bearer ${accessToken}`);
 
     res.json(user);
+
+    return { user, accessToken };
   }
 
   /**
@@ -75,13 +77,22 @@ export class AuthService {
    * @param loginDto see LoginDto
    * @param res @ express response
    */
-  login = async (loginDto: AuthenticatingDto, res: Response): Promise<void> => {
+  login = async (
+    loginDto: AuthenticatingDto,
+    res: Response,
+  ): Promise<{ user: User; accessToken: string }> => {
     const { username, password } = loginDto;
 
-    const user = await this.userService.getUser(
-      { username },
-      { password: 1, id: 1, username: 1 },
-    );
+    let user: User;
+
+    try {
+      user = await this.userService.getUser(
+        { username },
+        { password: 1, id: 1, username: 1 },
+      );
+    } catch {
+      throw new UnauthorizedException('wrong username or password');
+    }
 
     const isValidUser: boolean = await this.isValidUser(user, password);
 
@@ -89,13 +100,18 @@ export class AuthService {
       throw new UnauthorizedException('wrong username or password');
     }
 
-    await this.generateAndSendAccessToken(user, res);
+    return this.generateAndSendAccessToken(user, res);
   };
 
+  /** Register a new user
+   *
+   * @param registerDto
+   * @param res
+   */
   register = async (
     registerDto: AuthenticatingDto,
     res: Response,
-  ): Promise<void> => {
+  ): Promise<{ user: User; accessToken: string }> => {
     const { username, password } = registerDto;
 
     const isUserExist = await this.userService.isUserExist({ username });
@@ -112,6 +128,6 @@ export class AuthService {
     };
     const id = await this.userService.createUser(user);
 
-    await this.generateAndSendAccessToken({ id, ...user }, res);
+    return this.generateAndSendAccessToken({ id, ...user }, res);
   };
 }

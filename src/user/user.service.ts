@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import type { FilterQuery, ProjectionElementType } from 'mongoose';
 import { Model } from 'mongoose';
@@ -32,8 +36,16 @@ export class UserService {
   }
 
   async createUser(user: Partial<UserDocument>): Promise<string> {
-    const [newUser] = await this.userModel.insertMany([user]);
+    try {
+      const [newUser] = await this.userModel.insertMany([user]);
 
-    return newUser.id;
+      return newUser.id;
+    } catch (error) {
+      if (error.code === 11_000) {
+        throw new BadRequestException('Username already exists');
+      }
+
+      throw error;
+    }
   }
 }

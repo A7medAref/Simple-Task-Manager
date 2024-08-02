@@ -4,8 +4,8 @@ import {
   Delete,
   Get,
   Param,
-  Patch,
   Post,
+  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -89,7 +89,7 @@ export class TaskController {
 
   @ApiOperation({ description: 'Update a task by id' })
   @UseGuards(UserGuard)
-  @Patch(':id')
+  @Put(':id')
   updateTask(
     @UserDecorator('id') userId: string,
     @Param('id') taskId: string,
