@@ -30,6 +30,7 @@ export class TaskService {
   ) {
     return this.taskModel
       .find({ userId, ...filter })
+      .select({ _id: false })
       .limit(limit)
       .skip(limit * (page - 1))
       .exec();
@@ -115,6 +116,7 @@ export class TaskService {
 
     return this.taskModel
       .find(findQuery)
+      .select({ _id: false })
       .limit(limit)
       .skip(limit * (page - 1))
       .exec();

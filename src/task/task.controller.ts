@@ -10,10 +10,13 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import {
+  ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
 import { UserDecorator } from '../common/decorators/user.decorator';
@@ -22,6 +25,7 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { GetTasksWithFilterDto } from './dto/get-tasks-with-filter.dto';
 import { PaginationDto } from './dto/pagination.dto';
 import { SearchTasksDto } from './dto/search-tasks.dto';
+import { TaskResponseDto } from './dto/task-response.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { TaskService } from './task.service';
 
@@ -35,6 +39,11 @@ export class TaskController {
   @ApiForbiddenResponse({
     description: 'You are not allowed to access this task',
   })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiCreatedResponse({
+    description: 'Task created successfully',
+    type: TaskResponseDto,
+  })
   @UseGuards(UserGuard)
   @Post()
   create(@Body() taskDto: CreateTaskDto, @UserDecorator('id') userId: string) {
@@ -42,6 +51,11 @@ export class TaskController {
   }
 
   @ApiOperation({ description: 'Get all tasks' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiOkResponse({
+    description: 'Tasks fetched successfully',
+    type: [TaskResponseDto],
+  })
   @UseGuards(UserGuard)
   @Get()
   getTasks(
@@ -52,6 +66,11 @@ export class TaskController {
   }
 
   @ApiOperation({ description: 'Get tasks with filter' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiOkResponse({
+    description: 'Tasks fetched successfully',
+    type: [TaskResponseDto],
+  })
   @UseGuards(UserGuard)
   @Get('filter')
   getTasksWithFilter(
@@ -62,6 +81,11 @@ export class TaskController {
   }
 
   @ApiOperation({ description: 'Search tasks by title or description' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiOkResponse({
+    description: 'Tasks fetched successfully',
+    type: [TaskResponseDto],
+  })
   @UseGuards(UserGuard)
   @Get('search')
   searchTasks(
@@ -78,6 +102,15 @@ export class TaskController {
   }
 
   @ApiOperation({ description: 'Get a task by id' })
+  @ApiNotFoundResponse({ description: 'Task not found' })
+  @ApiForbiddenResponse({
+    description: 'You are not allowed to access this task',
+  })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiOkResponse({
+    description: 'Task fetched successfully',
+    type: TaskResponseDto,
+  })
   @UseGuards(UserGuard)
   @Get(':id')
   getTaskById(
@@ -88,6 +121,12 @@ export class TaskController {
   }
 
   @ApiOperation({ description: 'Update a task by id' })
+  @ApiNotFoundResponse({ description: 'Task not found' })
+  @ApiForbiddenResponse({
+    description: 'You are not allowed to access this task',
+  })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiOkResponse({ description: 'Task updated successfully' })
   @UseGuards(UserGuard)
   @Put(':id')
   updateTask(
@@ -99,6 +138,12 @@ export class TaskController {
   }
 
   @ApiOperation({ description: 'Delete a task by id' })
+  @ApiNotFoundResponse({ description: 'Task not found' })
+  @ApiForbiddenResponse({
+    description: 'You are not allowed to access this task',
+  })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiOkResponse({ description: 'Task deleted successfully' })
   @UseGuards(UserGuard)
   @Delete(':id')
   deleteTask(@UserDecorator('id') userId: string, @Param('id') taskId: string) {

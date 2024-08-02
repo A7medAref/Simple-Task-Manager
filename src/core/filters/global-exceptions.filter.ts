@@ -21,15 +21,6 @@ export class GlobalExceptionsFilter implements ExceptionFilter {
         ? httpResponse
         : { message: exception.message };
 
-    if (exception.code === '23503') {
-      return response.status(HttpStatus.BAD_REQUEST).json({
-        statusCode: HttpStatus.BAD_REQUEST,
-        message: 'Foreign key constraint error',
-        timestamp: new Date().toISOString(),
-        path: request.url,
-      });
-    }
-
     response.status(status).json({
       ...responseBody,
       statusCode: status,

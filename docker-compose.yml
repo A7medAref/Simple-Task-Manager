@@ -8,5 +8,18 @@ services:
       - dija_mongo_data:/data/db
     restart: always
 
+  backend:
+    build:
+      context: .
+      dockerfile: dockerfile
+    env_file:
+      - .env
+    container_name: backend
+    ports:
+      - '3000:3000'
+    depends_on:
+      - mongo
+    restart: always
+
 volumes:
   dija_mongo_data:

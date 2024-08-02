@@ -67,7 +67,7 @@ export class AuthService {
     // send the access token in the header
     res.setHeader('Authorization', `Bearer ${accessToken}`);
 
-    res.json(user);
+    res.json({ id: user.id, username: user.username });
 
     return { user, accessToken };
   }
